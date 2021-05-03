@@ -10,3 +10,5 @@
 `pip install selenium`
 
 Pronto! Script está pronto para ser executado
+
+`python main.py`
