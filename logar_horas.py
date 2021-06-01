@@ -12,7 +12,8 @@ def logar_horas(
     START_DATE,
     END_DATE,
     LOG_WEEKENDS = False,
-    DEV_MODE = False
+    DEV_MODE = False,
+    HOURS_OF_WORK = 8
 ):
     # start Channel
     driver = startup('https://channel.certi.org.br/channel/projeto.do?action=projetosUsuario')
@@ -80,7 +81,7 @@ def logar_horas(
                 pass
 
         # set hours
-        fill_text_field('duracaoApontamento', '8')
+        fill_text_field('duracaoApontamento', str(HOURS_OF_WORK))
         # save
         if (DEV_MODE):
             sleep(2)
