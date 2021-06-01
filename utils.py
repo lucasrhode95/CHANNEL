@@ -108,10 +108,18 @@ def choose_from_radio_buttom(radio_group_id, radio_value):
     scroll_and_click(driver.find_element_by_id(radio_option_id))
 
 def fill_text_field(fieldId, text):
-    driver.find_element_by_id(fieldId).send_keys(text)
+    wait_for_element(fieldId)
+    elem = driver.find_element_by_id(fieldId)
+    # scroll_and_click(elem)
+    elem.clear()
+    elem.send_keys(text)
 
 def fill_text_field_and_enter(fieldId, text):
-    driver.find_element_by_id(fieldId).send_keys(text, Keys.ENTER)
+    wait_for_element(fieldId)
+    elem = driver.find_element_by_id(fieldId)
+    scroll_and_click(elem)
+    elem.clear()
+    elem.send_keys(text, Keys.ENTER)
 
 def fill_text_field_random(fieldId, prefix='Test', length=10):
     randomText = random_string(prefix, length)

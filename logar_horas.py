@@ -1,3 +1,4 @@
+from logging import lastResort
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
@@ -19,15 +20,12 @@ def logar_horas(
     driver = startup('https://channel.certi.org.br/channel/projeto.do?action=projetosUsuario')
 
     # login
-    wait_for_element('username')
-    wait_for_element('password')
     fill_text_field('username', USER)
     fill_text_field_and_enter('password', PASSWORD)
 
     # search bar
-    wait_for_element('ATV_buscaSimples')
     fill_text_field_and_enter('ATV_buscaSimples', RDA)
-    sleep(0.5) # couldn't get rid of this sleep because there is no clear indication that the search has finished
+    sleep(1)
 
     # first <tr>
     table_elem = driver.find_element_by_id('tblAtividadesPendentes')
@@ -37,13 +35,11 @@ def logar_horas(
     sleep(0.1) # because of the scroll
 
     # last <td>
-    td_elems = tr_elem.find_elements_by_tag_name('td')
-    last_td_elem = None
-    for td_elem in td_elems:
-        last_td_elem = td_elem
+    td_elems = retry(lambda: list(tr_elem.find_elements_by_tag_name('td')), max_tries=100)
+    last_td_elem = td_elems[-1]
 
     # last <a>
-    a_elems = last_td_elem.find_elements_by_tag_name('a')
+    a_elems = retry(lambda: last_td_elem.find_elements_by_tag_name('a'), max_tries=100)
     last_a_elem = None
     for last_a in a_elems:
         last_a_elem = last_a
@@ -66,28 +62,36 @@ def logar_horas(
             continue
 
         # add work log click
-        wait_for_element('incluirApontamentoListar')
-        click('incluirApontamentoListar')
+        wait_and_click('incluirApontamentoListar')
 
         # set date
-        for j in range(10):
-            try:
-                wait_for_element('dataApontamento')
-                date_elem = driver.find_element_by_id('dataApontamento')
-                date_elem.clear()
-                date_elem.send_keys(date_str)
-                break
-            except:
-                pass
+        retry(lambda: fill_text_field('dataApontamento', date_str), max_tries=100)
 
         # set hours
         fill_text_field('duracaoApontamento', str(HOURS_OF_WORK))
+
         # save
         if (DEV_MODE):
-            sleep(2)
-            click('btn_cancelar_apontamento')
+            wait_and_click('btn_cancelar_apontamento')
         else:
-            click('btn_salvar_apontamento')
+            wait_and_click('btn_salvar_apontamento')
+
         log_date = log_date + datetime.timedelta(days=1)
 
-    driver.close()
+    # driver.close()
+
+def retry(action, max_tries=None, delay=0.1):
+    """
+    This helps us to retry stuff for when the VPN is slow
+    """
+    tries = 0
+    last_exception = None
+    while (max_tries is None) or (tries < max_tries):
+        tries += 1
+        try:
+            return action()
+        except Exception as ex:
+            sleep(delay)
+            last_exception = ex
+    else:
+        raise last_exception
