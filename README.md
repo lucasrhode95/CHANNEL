@@ -1,5 +1,7 @@
 ## Instalação
 
+* Baixar esse repositório:
+`git clone https://lucas_rhode@bitbucket.org/lucas_rhode_lrh/channel.git`
 * Descobrir versão do Chrome:
 ![image](./docs/chrome1.png)
 ![image](./docs/chrome2.png)
