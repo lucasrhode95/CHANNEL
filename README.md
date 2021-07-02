@@ -5,7 +5,7 @@
 * Descobrir versão do Chrome:
 ![image](./docs/chrome1.png)
 ![image](./docs/chrome2.png)
-* Baixar e instalar a extensão do Selenium para o chrome:
+* Baixar e instalar a extensão do Selenium para o chrome (conferir com a versão que você viu acima):
 [https://sites.google.com/a/chromium.org/chromedriver/downloads](https://sites.google.com/a/chromium.org/chromedriver/downloads)
 * Instalar extensão Python:
 pip install selenium
